@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eto.ImageViewEx", "Eto.ImageViewEx\Eto.ImageViewEx.csproj", "{492B7C92-4FB1-4E87-B2FC-A7EA6F147991}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{21C4E5B8-8A1A-4B52-AF6F-D34800D42217}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EtoApp1.Wpf", "EtoApp1.Wpf\EtoApp1.Wpf.csproj", "{B5A7E093-2E9D-4CED-BA59-0CDC47A70B45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{492B7C92-4FB1-4E87-B2FC-A7EA6F147991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{492B7C92-4FB1-4E87-B2FC-A7EA6F147991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{492B7C92-4FB1-4E87-B2FC-A7EA6F147991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{492B7C92-4FB1-4E87-B2FC-A7EA6F147991}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A7E093-2E9D-4CED-BA59-0CDC47A70B45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A7E093-2E9D-4CED-BA59-0CDC47A70B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A7E093-2E9D-4CED-BA59-0CDC47A70B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A7E093-2E9D-4CED-BA59-0CDC47A70B45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64E6E7E6-1E79-4C6C-B90A-BBF5CBAE61FB}
+	EndGlobalSection
+EndGlobal
