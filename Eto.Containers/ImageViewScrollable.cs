@@ -8,16 +8,16 @@ namespace Eto.Containers
 	//     Scrollable container containing a Zoomable & Panable ImageView
 	public class ImageViewScrollable : DragScrollable
 	{
-		private readonly ImageViewZoomable _zoom = new ImageViewZoomable();
+		private readonly DragZoomImageView _zoom = new DragZoomImageView();
 		public ImageViewScrollable()
 		{
 			base.DragButton = MouseButtons.Primary;
-			_zoom.PanButton = MouseButtons.Alternate;
+			_zoom.DragButton = MouseButtons.Alternate;
 			base.Content = _zoom;
 		}
-		new public ImageViewZoomable Content { get { return _zoom; } } // no set !
+		new public DragZoomImageView Content { get { return _zoom; } } // no set !
 
-		public Image Image // shortcut
+		public Image? Image // shortcut
 		{
 			get { return _zoom.Image; }
 			set { _zoom.Image = value; }

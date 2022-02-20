@@ -1,19 +1,32 @@
 ﻿
 namespace Eto.Containers
 {
+	using System;
 	using Eto.Forms;
 	using Eto.Drawing;
 	//
 	// Summary:
-	//     ImageView with Zoom & Pan support
-	public class ImageViewZoomable : ImageView
+	//     Panel with Zoom & Pan support
+	public class DragZoomImageView : Drawable
 	{
 		readonly IMatrix _transform = Matrix.Create();
 
-//		public Image Image { get; set; }
-		public MouseButtons PanButton { get; set; }
-
-#if false
+		public Keys DragModifier { get; set; } = Keys.None;
+		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
+		public Image? Image { get; set; }
+		new public Control? Content
+		{
+			get => base.Content;
+			set 
+			{
+				if (value is ImageView iv)
+					Image = iv.Image;
+				else if (value is null)
+					Image = null;
+				else
+					throw new ArgumentException("Use Image Property ; not Content");
+			}
+		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			if (Image != null)
@@ -22,7 +35,6 @@ namespace Eto.Containers
 				e.Graphics.DrawImage(Image, e.ClipRectangle);
 			}
 		}
-#endif
 
 		static SizeF One = SizeF.Empty + 1;
 		protected override void OnMouseWheel(MouseEventArgs e)
@@ -46,7 +58,7 @@ namespace Eto.Containers
 		PointF _mouse_down;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			e.Handled = e.Buttons == PanButton && e.Modifiers == Keys.None;
+			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
 
 			if (e.Handled)
 			{

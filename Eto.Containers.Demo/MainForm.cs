@@ -26,9 +26,12 @@ namespace Eto.Containers.Demo
 			var b3 = new Button { Text = "DragScrollable", ToolTip = "(containing an Image)" };
 			b3.Click += (o, e) => _image_view.Content = new DragScrollable { Content = image };
 
+			var b4 = new Button { Text = "DragZoomImageView", ToolTip = "(containing an Image)" };
+			b4.Click += (o, e) => _image_view.Content = new DragZoomImageView { Content = image };
+
 			// layout
 
-			var buttons = new StackLayout(b3, null, b1, b2) { Orientation = Orientation.Horizontal, Padding = 2, Spacing = 4 };
+			var buttons = new StackLayout(b3, b4, null, b1, b2) { Orientation = Orientation.Horizontal, Padding = 2, Spacing = 4 };
 
 			Content = new DynamicLayout(buttons, _image_view);
 		}
