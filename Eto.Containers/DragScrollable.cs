@@ -10,7 +10,8 @@ namespace Eto.Containers
 	{
 		public Keys DragModifier { get; set; } = Keys.None;
 		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
-
+		public enum Mode { Content, Scrollbar }
+		Mode DragMode { get; set; } = Mode.Content;
 		new public Control Content 
 		{
 			get => base.Content;
@@ -35,33 +36,36 @@ namespace Eto.Containers
 		}
 
 		#region mouse_scroll
-		PointF _init_drag_location, _scroll_position;
+		static readonly PointF _no_position = PointF.Empty - 1;
+		PointF _scroll_position, _mouse_pos;
 		private void content_MouseDown(object sender, MouseEventArgs e)
 		{
 			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
 
 			if (e.Handled)
 			{
-				_init_drag_location = e.Location;
-				_scroll_position = ScrollPosition;
+				_mouse_pos = Mouse.Position; // can't trust MouseEventArgs.Location, setting scrollposition fires bogus mousemoves(?)
+				_scroll_position = ScrollPosition; // incremental tracking with extra PointF-member to not accumulate rounding errors
 
 				Cursor = Cursors.Move;
 			}
 		}
 		private void content_MouseMove(object sender, MouseEventArgs e)
 		{
-			e.Handled = _init_drag_location != PointF.Empty;
+			e.Handled = _mouse_pos != _no_position;
 
 			if (e.Handled)
 			{
-				var delta = e.Location - _init_drag_location;
+				var delta = Mouse.Position - _mouse_pos;
 
-				_init_drag_location = e.Location;
+				_mouse_pos = Mouse.Position;
 
-				// incremental tracking with extra PointF-member to not accumulate rounding errors
-				_scroll_position += delta * Size / ScrollSize;
+				if (DragMode == Mode.Scrollbar)
+					_scroll_position += delta * ScrollSize / Size;
+				else // normal mode ; drag content directly
+					_scroll_position -= delta;
 
-				// avoid spin up when outside range
+				// anti-windup when outside range
 				_scroll_position = PointF.Max(PointF.Empty, _scroll_position);
 				_scroll_position = PointF.Min(_scroll_position, (Point) ScrollSize - Size);
 
@@ -70,11 +74,11 @@ namespace Eto.Containers
 		}
 		private void content_MouseUp(object sender, MouseEventArgs e)
 		{
-			e.Handled = _init_drag_location != PointF.Empty;
+			e.Handled = _mouse_pos != _no_position;
 
 			if (e.Handled)
 			{
-				_init_drag_location= PointF.Empty;
+				_mouse_pos = _no_position;
 
 				Cursor = Cursors.Default;
 			}
