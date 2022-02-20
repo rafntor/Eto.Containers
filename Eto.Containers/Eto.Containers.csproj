@@ -8,7 +8,7 @@
     <Authors>Tore Fuglestad</Authors>
     <Owners>Tore Fuglestad</Owners>
     <Copyright>Copyright © Tore Fuglestad 2020</Copyright>
-    <Description>Extra Containers with Zoom/Pan/Scroll-functionality for Eto.Forms</Description>
+    <Description>Extra Containers with additional Zoom/Drag/Scroll-functionality for Eto.Forms</Description>
     <PackageTags>Eto.Forms Extension Image Control</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>readme.md</PackageReadmeFile>

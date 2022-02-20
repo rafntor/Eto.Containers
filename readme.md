@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/v/Eto.Containers)](https://www.nuget.org/packages/Eto.Containers/)
 [![License](https://img.shields.io/github/license/rafntor/Eto.Containers)](LICENSE)
 
-Provides some extra [Eto.Forms](https://github.com/picoe/Eto) containers that adds various features:
+Provides some extra [Eto.Forms](https://github.com/picoe/Eto) containers that adds various Zoom/Drag/Scroll-features:
 - `Eto.Containers.DragScrollable` - a scrollable container where content can also be dragged.
 - `Eto.Containers.DragScrollable` - a scrollable container where content can also be dragged.
 - `Eto.Containers.DragScrollable` - a scrollable container where content can also be dragged.

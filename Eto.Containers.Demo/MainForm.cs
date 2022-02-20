@@ -13,13 +13,22 @@ namespace Eto.Containers.Demo
 
 			var image = Bitmap.FromResource("Eto.Containers.Demo.Images.yggdrasil.jpg");
 
+			// standard containers
+
 			var b1 = new Button { Text = "ImageView", ToolTip = "(standard ImageView control)" };
 			b1.Click += (o, e) => _image_view.Content = new ImageView { Image = image };
 
-			var b2 = new Button { Text = "DragScrollable", ToolTip = "(containing an ImageView)" };
-			b2.Click += (o, e) => _image_view.Content = new DragScrollable { Content = new ImageView { Image = image } };
+			var b2 = new Button { Text = "Scrollable", ToolTip = "(standard Scrollable control)" };
+			b2.Click += (o, e) => _image_view.Content = new Scrollable { Content = image };
 
-			var buttons = new StackLayout(b1, b2) { Orientation = Orientation.Horizontal, Padding = 2, Spacing = 4 };
+			// custom containers
+
+			var b3 = new Button { Text = "DragScrollable", ToolTip = "(containing an Image)" };
+			b3.Click += (o, e) => _image_view.Content = new DragScrollable { Content = image };
+
+			// layout
+
+			var buttons = new StackLayout(b3, null, b1, b2) { Orientation = Orientation.Horizontal, Padding = 2, Spacing = 4 };
 
 			Content = new DynamicLayout(buttons, _image_view);
 		}
