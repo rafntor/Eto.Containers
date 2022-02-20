@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-
-using Eto.Drawing;
-
-namespace Eto.Forms
+﻿
+namespace Eto.Containers
 {
+	using Eto.Forms;
+	using Eto.Drawing;
 	//
 	// Summary:
 	//     Scrollable container containing a Zoomable & Panable ImageView

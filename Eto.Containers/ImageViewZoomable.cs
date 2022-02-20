@@ -1,20 +1,19 @@
-﻿using System;
-using System.IO;
-
-using Eto.Drawing;
-
-namespace Eto.Forms
+﻿
+namespace Eto.Containers
 {
+	using Eto.Forms;
+	using Eto.Drawing;
 	//
 	// Summary:
 	//     ImageView with Zoom & Pan support
-	public class ImageViewZoomable : Drawable
+	public class ImageViewZoomable : ImageView
 	{
 		readonly IMatrix _transform = Matrix.Create();
 
-		public Image Image { get; set; }
+//		public Image Image { get; set; }
 		public MouseButtons PanButton { get; set; }
 
+#if false
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			if (Image != null)
@@ -23,6 +22,8 @@ namespace Eto.Forms
 				e.Graphics.DrawImage(Image, e.ClipRectangle);
 			}
 		}
+#endif
+
 		static SizeF One = SizeF.Empty + 1;
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
@@ -67,6 +68,8 @@ namespace Eto.Forms
 				var move = Matrix.FromTranslation(e.Location - _mouse_down);
 
 				Matrix.Append(_transform, move);
+
+				//base.Size = (Size) _transform.TransformSize(this.Size);
 
 				_mouse_down = e.Location;
 

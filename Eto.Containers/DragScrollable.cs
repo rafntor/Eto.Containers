@@ -1,20 +1,18 @@
-﻿using System;
-using System.IO;
-
-using Eto.Drawing;
-
-namespace Eto.Forms
+﻿
+namespace Eto.Containers
 {
+	using Eto.Forms;
+	using Eto.Drawing;
 	//
 	// Summary:
 	//     Scrollable container adding mouse-dragging support
 	public class DragScrollable : Scrollable
 	{
-		public MouseButtons DragButton { get; set; }
+		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
 
 		new public Control Content 
 		{
-			get { return base.Content; }
+			get => base.Content;
 			set 
 			{ 
 				if (base.Content != null)
