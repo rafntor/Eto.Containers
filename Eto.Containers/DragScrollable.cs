@@ -5,9 +5,10 @@ namespace Eto.Containers
 	using Eto.Drawing;
 	//
 	// Summary:
-	//     Scrollable container adding mouse-dragging support
+	//     Scrollable container adding mouse-dragging scroll-support
 	public class DragScrollable : Scrollable
 	{
+		public Keys DragModifier { get; set; } = Keys.None;
 		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
 
 		new public Control Content 
@@ -21,7 +22,9 @@ namespace Eto.Containers
 					base.Content.MouseMove -= content_MouseMove;
 					base.Content.MouseUp -= content_MouseUp;
 				}
+
 				base.Content = value;
+
 				if (base.Content != null)
 				{
 					base.Content.MouseDown += content_MouseDown;
@@ -32,39 +35,38 @@ namespace Eto.Containers
 		}
 
 		#region mouse_scroll
-		PointF _scroll_init_pos;
+		PointF _init_drag_location;
+		Point _init_scroll_posistion; 
 		private void content_MouseDown(object sender, MouseEventArgs e)
 		{
-			e.Handled = e.Buttons == DragButton && e.Modifiers == Keys.None;
+			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
 
 			if (e.Handled)
 			{
-				_scroll_init_pos = ScrollPosition - e.Location;
+				_init_scroll_posistion = ScrollPosition;
+				_init_drag_location = e.Location;
 
 				Cursor = Cursors.Move;
 			}
 		}
 		private void content_MouseMove(object sender, MouseEventArgs e)
 		{
-			e.Handled = _scroll_init_pos != PointF.Empty;
+			e.Handled = _init_drag_location != PointF.Empty;
 
 			if (e.Handled)
 			{
-				var factor = 0.9f; // scroll speed adjustment
+				var delta = e.Location - _init_drag_location;
 
-				var delta = e.Location - _scroll_init_pos;
-				var move = _scroll_init_pos + delta * factor;
-
-				ScrollPosition = (Point) (_scroll_init_pos + move);
+				ScrollPosition = _init_scroll_posistion + (Point) (delta * Size / ScrollSize);
 			}
 		}
 		private void content_MouseUp(object sender, MouseEventArgs e)
 		{
-			e.Handled = _scroll_init_pos != PointF.Empty;
+			e.Handled = _init_drag_location != PointF.Empty;
 
 			if (e.Handled)
 			{
-				_scroll_init_pos= PointF.Empty;
+				_init_drag_location= PointF.Empty;
 
 				Cursor = Cursors.Default;
 			}
