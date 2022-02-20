@@ -35,16 +35,15 @@ namespace Eto.Containers
 		}
 
 		#region mouse_scroll
-		PointF _init_drag_location;
-		Point _init_scroll_posistion; 
+		PointF _init_drag_location, _scroll_position;
 		private void content_MouseDown(object sender, MouseEventArgs e)
 		{
 			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
 
 			if (e.Handled)
 			{
-				_init_scroll_posistion = ScrollPosition;
 				_init_drag_location = e.Location;
+				_scroll_position = ScrollPosition;
 
 				Cursor = Cursors.Move;
 			}
@@ -57,7 +56,16 @@ namespace Eto.Containers
 			{
 				var delta = e.Location - _init_drag_location;
 
-				ScrollPosition = _init_scroll_posistion + (Point) (delta * Size / ScrollSize);
+				_init_drag_location = e.Location;
+
+				// incremental tracking with extra PointF-member to not accumulate rounding errors
+				_scroll_position += delta * Size / ScrollSize;
+
+				// avoid spin up when outside range
+				_scroll_position = PointF.Max(PointF.Empty, _scroll_position);
+				_scroll_position = PointF.Min(_scroll_position, (Point) ScrollSize - Size);
+
+				ScrollPosition = (Point) _scroll_position;
 			}
 		}
 		private void content_MouseUp(object sender, MouseEventArgs e)
