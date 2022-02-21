@@ -27,7 +27,7 @@ namespace Eto.Containers.Demo
 			b3.Click += (o, e) => _image_view.Content = new DragScrollable { Content = image };
 
 			var b4 = new Button { Text = "DragZoomImageView", ToolTip = "(containing an Image)" };
-			b4.Click += (o, e) => _image_view.Content = new DragZoomImageView { Content = image };
+			b4.Click += (o, e) => _image_view.Content = new DragZoomImageView { Image = image };
 
 			// layout
 
