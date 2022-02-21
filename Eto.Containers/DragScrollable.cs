@@ -37,7 +37,7 @@ namespace Eto.Containers
 
 		#region mouse_scroll
 		static readonly PointF _no_position = PointF.Empty - 1;
-		PointF _scroll_position, _mouse_pos;
+		PointF _scroll_position, _mouse_pos = _no_position;
 		private void content_MouseDown(object sender, MouseEventArgs e)
 		{
 			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
@@ -84,6 +84,5 @@ namespace Eto.Containers
 			}
 		}
 		#endregion
-
 	}
 }
