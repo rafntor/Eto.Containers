@@ -13,10 +13,12 @@ namespace Eto.Containers
 		IMatrix _base_transform = Matrix.Create();
 		IMatrix _size_transform = Matrix.Create();
 		IMatrix _zoom_transform = Matrix.Create();
+		Cursor _defaultCursor = Cursors.Default;
+		public Cursor DragCursor { get; set; } = Cursors.Move;
 		public Keys DragModifier { get; set; } = Keys.None;
 		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
 		public Image? Image
-		{ 
+		{
 			get => _image;
 			set
 			{
@@ -29,8 +31,8 @@ namespace Eto.Containers
 		{
 			if (Image != null && Width > 0 && Height > 0)
 			{
-				var scale_x = (float) Width / Image.Width;
-				var scale_y = (float) Height / Image.Height;
+				var scale_x = (float)Width / Image.Width;
+				var scale_y = (float)Height / Image.Height;
 				var scale = Math.Min(scale_x, scale_y);
 
 				var xoff = Width - scale * Image.Width;
@@ -51,7 +53,7 @@ namespace Eto.Containers
 		new public Control? Content
 		{
 			get => base.Content;
-			set 
+			set
 			{
 				if (value is ImageView iv)
 					Image = iv.Image;
@@ -81,7 +83,7 @@ namespace Eto.Containers
 
 			e.Handled = true;
 		}
-#region mouse pan
+		#region mouse pan
 		PointF _mouse_down;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -91,7 +93,8 @@ namespace Eto.Containers
 			{
 				_mouse_down = e.Location;
 
-				Cursor = Cursors.Move;
+				_defaultCursor = Cursor;
+				Cursor = DragCursor;
 			}
 			else
 			{
@@ -129,13 +132,13 @@ namespace Eto.Containers
 			{
 				_mouse_down = PointF.Empty;
 
-				Cursor = Cursors.Default;
+				Cursor = _defaultCursor;
 			}
 			else
 			{
 				base.OnMouseUp(e);
 			}
 		}
-#endregion
+		#endregion
 	}
 }
