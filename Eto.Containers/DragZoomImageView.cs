@@ -71,6 +71,7 @@ namespace Eto.Containers
 				e.Graphics.MultiplyTransform(_zoom_transform);
 				e.Graphics.DrawImage(Image, PointF.Empty);
 			}
+			base.OnPaint(e);
 		}
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
@@ -81,7 +82,7 @@ namespace Eto.Containers
 
 			this.Invalidate();
 
-			e.Handled = true;
+			base.OnMouseWheel(e);
 		}
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
@@ -101,24 +102,18 @@ namespace Eto.Containers
 		PointF _mouse_down;
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			e.Handled = e.Buttons == DragButton && e.Modifiers == DragModifier;
-
-			if (e.Handled)
+			if (e.Buttons == DragButton && e.Modifiers == DragModifier)
 			{
 				_mouse_down = e.Location;
 
 				_defaultCursor = Cursor;
 			}
-			else
-			{
-				base.OnMouseDown(e);
-			}
+
+			base.OnMouseDown(e);
 		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			e.Handled = _mouse_down != PointF.Empty;
-
-			if (e.Handled)
+			if (_mouse_down != PointF.Empty)
 			{
 				Cursor = DragCursor;
 
@@ -134,25 +129,19 @@ namespace Eto.Containers
 
 				this.Invalidate();
 			}
-			else
-			{
-				base.OnMouseMove(e);
-			}
+
+			base.OnMouseMove(e);
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
-			e.Handled = _mouse_down != PointF.Empty;
-
-			if (e.Handled)
+			if (_mouse_down != PointF.Empty)
 			{
 				_mouse_down = PointF.Empty;
 
 				Cursor = _defaultCursor;
 			}
-			else
-			{
-				base.OnMouseUp(e);
-			}
+
+			base.OnMouseUp(e);
 		}
 		#endregion
 	}
