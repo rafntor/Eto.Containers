@@ -27,6 +27,20 @@ namespace Eto.Containers
 				Invalidate();
 			}
 		}
+		public void ResetView()
+		{
+			_zoom_transform = Matrix.Create();
+		}
+		public void MoveView(PointF offset)
+		{
+			offset = _size_transform.TransformPoint(offset);
+
+			var move = Matrix.FromTranslation(offset);
+
+			Matrix.Append(_zoom_transform, move);
+
+			this.Invalidate();
+		}
 		void size_transform()
 		{
 			if (Image != null && Width > 0 && Height > 0)
@@ -86,15 +100,7 @@ namespace Eto.Containers
 		}
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
-			var dist = (Point) Size / 2 - e.Location; // move clicked location to center
-
-			dist = _size_transform.TransformPoint(dist);
-
-			var move = Matrix.FromTranslation(dist);
-
-			Matrix.Append(_zoom_transform, move);
-
-			this.Invalidate();
+			MoveView((Point)Size / 2 - e.Location); // move clicked location to center
 
 			base.OnMouseDoubleClick(e);
 		}
