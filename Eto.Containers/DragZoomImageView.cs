@@ -9,11 +9,45 @@ namespace Eto.Containers
 	//     Panel with Zoom & Pan support
 	public class DragZoomImageView : Drawable
 	{
-		readonly IMatrix _transform = Matrix.Create();
-
+		Image? _image;
+		IMatrix _base_transform = Matrix.Create();
+		IMatrix _size_transform = Matrix.Create();
+		IMatrix _zoom_transform = Matrix.Create();
 		public Keys DragModifier { get; set; } = Keys.None;
 		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
-		public Image? Image { get; set; }
+		public Image? Image
+		{ 
+			get => _image;
+			set
+			{
+				_image = value;
+				size_transform();
+				Invalidate();
+			}
+		}
+		void size_transform()
+		{
+			if (Image != null && Width > 0 && Height > 0)
+			{
+				var scale_x = (float) Width / Image.Width;
+				var scale_y = (float) Height / Image.Height;
+				var scale = Math.Min(scale_x, scale_y);
+
+				var xoff = Width - scale * Image.Width;
+				var yoff = Height - scale * Image.Height;
+
+				_base_transform = Matrix.FromTranslation(xoff / 2, yoff / 2);
+				_base_transform.Scale(scale);
+
+				_size_transform = Matrix.FromScale(scale, scale).Inverse();
+			}
+		}
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			size_transform();
+
+			base.OnSizeChanged(e);
+		}
 		new public Control? Content
 		{
 			get => base.Content;
@@ -31,28 +65,21 @@ namespace Eto.Containers
 		{
 			if (Image != null)
 			{
-				e.Graphics.MultiplyTransform(_transform);
-				e.Graphics.DrawImage(Image, e.ClipRectangle);
+				e.Graphics.MultiplyTransform(_base_transform);
+				e.Graphics.MultiplyTransform(_zoom_transform);
+				e.Graphics.DrawImage(Image, PointF.Empty);
 			}
 		}
-
-		static SizeF One = SizeF.Empty + 1;
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
-			var scale_siz = One + e.Delta.Height / 6;
+			var scale_siz = SizeF.Empty + 1 + e.Delta.Height / 6;
 			var scale = Matrix.FromScaleAt(scale_siz, e.Location);
 
-			Matrix.Append(_transform, scale);
+			Matrix.Append(_zoom_transform, scale);
 
 			this.Invalidate();
 
 			e.Handled = true;
-		}
-		public void MoveGraphic(Point offset)
-		{
-			var move = Matrix.FromTranslation(offset);
-
-			Matrix.Prepend(_transform, move);
 		}
 #region mouse pan
 		PointF _mouse_down;
@@ -77,11 +104,13 @@ namespace Eto.Containers
 
 			if (e.Handled)
 			{
-				var move = Matrix.FromTranslation(e.Location - _mouse_down);
+				var dist = e.Location - _mouse_down;
 
-				Matrix.Append(_transform, move);
+				dist = _size_transform.TransformPoint(dist);
 
-				//base.Size = (Size) _transform.TransformSize(this.Size);
+				var move = Matrix.FromTranslation(dist);
+
+				Matrix.Append(_zoom_transform, move);
 
 				_mouse_down = e.Location;
 
