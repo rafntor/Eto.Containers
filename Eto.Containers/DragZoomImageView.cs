@@ -83,6 +83,20 @@ namespace Eto.Containers
 
 			e.Handled = true;
 		}
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			var dist = (Point) Size / 2 - e.Location; // move clicked location to center
+
+			dist = _size_transform.TransformPoint(dist);
+
+			var move = Matrix.FromTranslation(dist);
+
+			Matrix.Append(_zoom_transform, move);
+
+			this.Invalidate();
+
+			base.OnMouseDoubleClick(e);
+		}
 		#region mouse pan
 		PointF _mouse_down;
 		protected override void OnMouseDown(MouseEventArgs e)
@@ -94,7 +108,6 @@ namespace Eto.Containers
 				_mouse_down = e.Location;
 
 				_defaultCursor = Cursor;
-				Cursor = DragCursor;
 			}
 			else
 			{
@@ -107,6 +120,8 @@ namespace Eto.Containers
 
 			if (e.Handled)
 			{
+				Cursor = DragCursor;
+
 				var dist = e.Location - _mouse_down;
 
 				dist = _size_transform.TransformPoint(dist);
