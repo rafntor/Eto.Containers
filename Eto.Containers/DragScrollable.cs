@@ -8,7 +8,9 @@ namespace Eto.Containers
 	//     Scrollable container adding mouse-dragging scroll-support
 	public class DragScrollable : Scrollable
 	{
+		private Cursor _default_cursor = Cursors.Default;
 		public Keys DragModifier { get; set; } = Keys.None;
+		public Cursor DragCursor { get; set; } = Cursors.Move;
 		public MouseButtons DragButton { get; set; } = MouseButtons.Primary;
 		public enum Mode { Content, Scrollbar }
 		Mode DragMode { get; set; } = Mode.Content;
@@ -46,8 +48,7 @@ namespace Eto.Containers
 			{
 				_mouse_pos = Mouse.Position; // can't trust MouseEventArgs.Location, setting scrollposition fires bogus mousemoves(?)
 				_scroll_position = ScrollPosition; // incremental tracking with extra PointF-member to not accumulate rounding errors
-
-				Cursor = Cursors.Move;
+				_default_cursor = Cursor;
 			}
 		}
 		private void content_MouseMove(object sender, MouseEventArgs e)
@@ -69,6 +70,8 @@ namespace Eto.Containers
 				_scroll_position = PointF.Max(PointF.Empty, _scroll_position);
 				_scroll_position = PointF.Min(_scroll_position, (Point) ScrollSize - Size);
 
+				Cursor = DragCursor;
+
 				ScrollPosition = (Point) _scroll_position;
 			}
 		}
@@ -80,7 +83,7 @@ namespace Eto.Containers
 			{
 				_mouse_pos = _no_position;
 
-				Cursor = Cursors.Default;
+				Cursor = _default_cursor;
 			}
 		}
 		#endregion
