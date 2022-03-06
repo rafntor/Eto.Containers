@@ -10,10 +10,9 @@ namespace Eto.Containers
 	public class DragZoomImageView : Drawable
 	{
 		Image? _image;
+		SizeF _prevsize;
 		RectangleF _selectRectangle;
-		IMatrix _base_transform = Matrix.Create();
-		IMatrix _size_transform = Matrix.Create();
-		IMatrix _zoom_transform = Matrix.Create();
+		IMatrix _transform = Matrix.Create();
 		Cursor _defaultCursor = Cursors.Default;
 		public Cursor DragCursor { get; set; } = Cursors.Move;
 		public Keys DragModifier { get; set; } = Keys.None;
@@ -29,44 +28,9 @@ namespace Eto.Containers
 			set
 			{
 				_image = value;
-				size_transform();
+				ResetView();
 				Invalidate();
 			}
-		}
-		public void ResetView()
-		{
-			_zoom_transform = Matrix.Create();
-		}
-		public void MoveView(PointF offset)
-		{
-			offset = _size_transform.TransformPoint(offset);
-
-			var move = Matrix.FromTranslation(offset);
-
-			Matrix.Append(_zoom_transform, move);
-
-			this.Invalidate();
-		}
-		void size_transform()
-		{
-			if (Image != null && Width > 0 && Height > 0)
-			{
-				var scale = (SizeF) Size / Image.Size;
-				scale.Width = scale.Height = Math.Min(scale.Width, scale.Height);
-
-				var offset = (PointF) (Size - scale * Image.Size) / 2;
-
-				_base_transform = Matrix.FromTranslation(offset);
-				_base_transform.Scale(scale);
-
-				_size_transform = Matrix.FromScale(scale).Inverse();
-			}
-		}
-		protected override void OnSizeChanged(EventArgs e)
-		{
-			size_transform();
-
-			base.OnSizeChanged(e);
 		}
 		new public Control? Content
 		{
@@ -81,6 +45,53 @@ namespace Eto.Containers
 					throw new ArgumentException("Use Image Property ; not Content");
 			}
 		}
+		public void ResetView()
+		{
+			init_transform();
+		}
+		public void MoveView(PointF start, PointF moveto)
+		{
+			start = _transform.Inverse().TransformPoint(start);
+			moveto = _transform.Inverse().TransformPoint(moveto);
+
+			_transform.Translate(moveto - start);
+
+			this.Invalidate();
+		}
+		private void init_transform()
+		{
+			if (Image != null && Width > 0 && Height > 0)
+			{
+				var scale_size = (SizeF) Size / Image.Size;
+				var scale = Math.Min(scale_size.Width, scale_size.Height);
+
+				var offset = (PointF) (Size - Image.Size * scale) / 2;
+
+				_transform = Matrix.FromTranslation(offset);
+				_transform.Scale(scale);
+			}
+		}
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			if (_prevsize.IsEmpty) // initial ?
+			{
+				init_transform();
+			}
+			else
+			{
+				var scale_size = Size / _prevsize;
+
+				var scale = (scale_size.Width + scale_size.Height) / 2; // approximation
+
+				var location = _transform.Inverse().TransformPoint(PointF.Empty);
+
+				_transform.ScaleAt(scale, location);
+			}
+
+			_prevsize = Size;
+
+			base.OnSizeChanged(e);
+		}
 		private bool ZoomMode
 		{
 			get => !_selectRectangle.IsZero;
@@ -92,14 +103,12 @@ namespace Eto.Containers
 					_selectRectangle = RectangleF.Empty;
 			}
 		}
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			if (Image != null)
 			{
 				e.Graphics.SaveTransform();
-				e.Graphics.MultiplyTransform(_base_transform);
-				e.Graphics.MultiplyTransform(_zoom_transform);
+				e.Graphics.MultiplyTransform(_transform);
 				e.Graphics.DrawImage(Image, PointF.Empty);
 
 				if (ZoomMode)
@@ -117,13 +126,9 @@ namespace Eto.Containers
 		}
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
-			var scale_siz = SizeF.Empty + 1 + e.Delta.Height / 6;
+			var location = _transform.Inverse().TransformPoint(e.Location);
 
-			var location = _base_transform.Inverse().TransformPoint(e.Location);
-
-			var scale = Matrix.FromScaleAt(scale_siz, location);
-
-			Matrix.Append(_zoom_transform, scale);
+			_transform.ScaleAt(1 + e.Delta.Height / 6, location);
 
 			this.Invalidate();
 
@@ -131,7 +136,7 @@ namespace Eto.Containers
 		}
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
-			MoveView((Point)Size / 2 - e.Location); // move clicked location to center
+			MoveView(e.Location, (Point)Size / 2); // move clicked location to center
 
 			base.OnMouseDoubleClick(e);
 		}
@@ -165,13 +170,7 @@ namespace Eto.Containers
 				{
 					Cursor = DragCursor;
 
-					var dist = e.Location - _mouse_down;
-
-					dist = _size_transform.TransformPoint(dist);
-
-					var move = Matrix.FromTranslation(dist);
-
-					Matrix.Append(_zoom_transform, move);
+					MoveView(_mouse_down, e.Location);
 
 					_mouse_down = e.Location;
 				}
@@ -188,13 +187,14 @@ namespace Eto.Containers
 				if (ZoomMode)
 				{
 					var scale_siz = Size / _selectRectangle.Size;
-					scale_siz.Width = scale_siz.Height = Math.Min(scale_siz.Width, scale_siz.Height);
+					var scale = Math.Min(scale_siz.Width, scale_siz.Height);
 
-					var location = _base_transform.Inverse().TransformPoint(_selectRectangle.Center);
+					var distance = _selectRectangle.Center - (SizeF) Size / 2;
+					var factor = distance / 8; // patch unknown drift (rounding err somewhere?) .. grows with distance from control.center
 
-					var scale = Matrix.FromScaleAt(scale_siz, location);
+					var location = _transform.Inverse().TransformPoint(_selectRectangle.Center + factor);
 
-					Matrix.Append(_zoom_transform, scale);
+					_transform.ScaleAt(scale, location);
 
 					this.Invalidate();
 
