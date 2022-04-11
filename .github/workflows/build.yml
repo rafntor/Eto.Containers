@@ -31,13 +31,13 @@ jobs:
         tar --directory=Eto.Containers.Demo/bin/Gtk/Debug/net6.0/linux-x64/publish -cvf Eto.Containers.Demo.Gtk.tar Eto.Containers.Demo
 
     - name: Upload Eto.Containers.Mac artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Eto.Containers.Demo.Mac
         path: Eto.Containers.Demo.Mac.tar
 
     - name: Upload Eto.Containers.Gtk artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Eto.Containers.Demo.Gtk
         path: Eto.Containers.Demo.Gtk.tar
@@ -60,13 +60,13 @@ jobs:
         dotnet publish -r win-x64 -p:PublishSingleFile=true --self-contained Eto.Containers.Demo
     
     - name: Upload Eto.Containers.Wpf artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Eto.Containers.Demo.Wpf
         path: Eto.Containers.Demo/bin/Wpf/Debug/net6.0-windows/win-x64/publish/Eto.Containers.Demo.exe
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: nuget
         path: ./**/bin/Release/*.nupkg
